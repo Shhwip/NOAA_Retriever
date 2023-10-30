@@ -1,8 +1,7 @@
 import pandas as pd
+import os
 from io import StringIO
 import requests
-import numpy as np
-import matplotlib.pyplot as plt
 
 
 def get_data(station_number, station_name):
@@ -57,37 +56,22 @@ def get_data(station_number, station_name):
     dfstation['Station Name'] = station_name
     dfstation.to_csv(station_number + '.csv', index=False)
 
-def merge(station_number, station_name):
-    # Read in data
-    df1 = pd.read_csv('CO-OPS__' + station_number + '__bp.csv')
-    df2 = pd.read_csv('CO-OPS__' + station_number + '__tt.csv')
-    df3 = pd.read_csv('CO-OPS__' + station_number + '__wl.csv')
-    df5 = pd.read_csv('CO-OPS__' + station_number + '__wt.csv')
-    df4 = pd.read_csv('CO-OPS__' + station_number + '__ws.csv')
-    df6 = pd.read_csv('CO-OPS__' + station_number + '__pr.csv')
+def merge():
 
-    # Drop empty columns
-    df1 = df1.drop(columns=[' X', ' N', ' R '])
-    df2 = df2.drop(columns=[' X', ' N', ' R '])
-    df3 = df3.drop(columns=[' F', ' R', ' L'])
-    df4 = df4.drop(columns=[' X', ' R '])
-    df5 = df5.drop(columns=[' X', ' N', ' R '])
+    df = pd.DataFrame()
 
-    # Merge dataframes
-    df = df1.merge(df2, on='Date Time', how='outer')
-    print(df.columns)
-    df = df.merge(df3, on='Date Time', how='outer')
-    print(df.columns)
-    df = df.merge(df4, on='Date Time', how='outer')
-    print(df.columns)
-    df = df.merge(df5, on='Date Time', how='outer')
-    print(df.columns)
-    df = df.merge(df6, on='Date Time', how='outer')
-    df['Station Number'] = station_number
+    for filename in os.listdir("stationData"):
+        f = os.path.join("stationData", filename)
+        # checking if it is a file
+        if os.path.isfile(f):
+            print(f)
+            df2 = pd.read_csv(f)
+            df = pd.concat([df, df2])
+
     print(df.columns)
     print(df.head())
     # Save to csv
-    df.to_csv(station_number + '.csv', index=False)
+    df.to_csv('fullData.csv', index=False)
 
 def iterateStations():
     with open("HarmonicStationNumbers.txt", 'r') as f:
@@ -97,19 +81,5 @@ def iterateStations():
 
 if __name__ == '__main__':
 
-    iterateStations()
-    # get_data('9455920')
-    # merge('9452210')
-    # merge('9455920')
-    # merge('9468756')
-
-    # df1 = pd.read_csv('9452210.csv')
-    # df2 = pd.read_csv('9455920.csv')
-    # df3 = pd.read_csv('9468756.csv')
-
-    # df1['Station Name'] = 'Juneau, AK'
-    # df2['Station Name'] = 'Anchorage, AK'
-    # df3['Station Name'] = 'Nome, AK'
-
-    # df = pd.concat([df1, df2, df3])
-    # df.to_csv('all_stations.csv', index=False)
+    #iterateStations()
+    #merge()
